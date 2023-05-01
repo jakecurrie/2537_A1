@@ -1,4 +1,3 @@
-
 require("./utils.js");
 
 require('dotenv').config();
@@ -8,16 +7,13 @@ const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
 
-
-
 const port = process.env.PORT || 3000;
 
 const app = express();
 
 const Joi = require("joi");
 
-
-const expireTime = 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
+const expireTime = 60 * 60 * 1000; //expires after 1 hour  (minutes * seconds * millis)
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -44,10 +40,9 @@ var mongoStore = MongoStore.create({
 
 app.use(session({
   secret: node_session_secret,
-  store: mongoStore, //default is memory store 
+  store: mongoStore,
   saveUninitialized: true,
   resave: false
-
 }
 ));
 
@@ -60,7 +55,6 @@ app.get('/', (req, res) => {
     <br>
     <a href="/login">Log In</a>
   `);
-  
 
 });
 
@@ -87,31 +81,25 @@ app.get('/createUser', (req, res) => {
   res.send(html);
 });
 
-
-
 app.get('/login', (req, res) => {
-  // req.session.loginError = false
-  var html = `
-  
-    <h2>log In </h2>
-    <form action='/loggingin' method='post'>
-    <input name='email' type='email' placeholder='email'>
-    <br>
-    
-
-    <input name='password' type='password' placeholder='password'>
-    <br>
-    <br>
-
-    <button>Submit</button>
-    </form>
-    <br>
-    <br>
-    ${req.session.loginError ? '<p style="color:red;">Invalid email/password combination</p>' : ''}
+    var html = `
+      <h2>log In </h2>
+      <form action='/loggingin' method='post'>
+      <input name='email' type='email' placeholder='email'>
+      <br>
+      <input name='password' type='password' placeholder='password'>
+      <br>
+      <br>
+      <button>Submit</button>
+      </form>
+      <br>
+      <br>
+      ${req.session.loginError ? `<p style="color:red;">${req.session.loginError}</p>` : ''}
     `;
+    req.session.loginError = null; // Add this line to clear the error after displaying it
+    res.send(html);
+  });
   
-  res.send(html);
-});
 
 app.post('/submitUser', async (req, res) => {
   var username = req.body.username;
@@ -140,46 +128,44 @@ app.post('/submitUser', async (req, res) => {
   res.redirect("/loggedin");
 });
 
-
 app.post('/loggingin', async (req, res) => {
- 
-  var password = req.body.password;
-  var email = req.body.email;
- 
-  const schema = Joi.string().email().required();
-  const validationResult = schema.validate(email);
-  if (validationResult.error != null) {
-    console.log(validationResult.error);
+    var password = req.body.password;
+    var email = req.body.email;
   
-    res.redirect("/login");
-    
-    return;
-  }
-
-  const result = await userCollection.find({ email: email }).project({ username: 1, password: 1, email:1, _id: 1 }).toArray();
-
-  console.log(result);
-  if (result.length != 1) {
-    req.session.loginError = true;
-    console.log("user not found");
-    res.redirect("/login");
-    return;
-  }
-  if (await bcrypt.compare(password, result[0].password)) {
-    console.log("correct password");
-    req.session.authenticated = true;
-    req.session.username = result[0].username;
-    req.session.cookie.maxAge = expireTime;
-
-    res.redirect("/loggedin");
-    return;
-  }
-  else {
-    console.log("incorrect password");
-    res.redirect("/login");
-    return;
-  }
-});
+    const schema = Joi.string().email().required();
+    const validationResult = schema.validate(email);
+    if (validationResult.error != null) {
+      console.log(validationResult.error);
+      res.redirect("/login");
+      return;
+    }
+  
+    const result = await userCollection.find({ email: email }).project({ username: 1, password: 1, email: 1, _id: 1 }).toArray();
+  
+    console.log(result);
+    if (result.length != 1) {
+      req.session.loginError = "Email not registered.";
+      console.log("user not found");
+      res.redirect("/login");
+      return;
+    }
+    if (await bcrypt.compare(password, result[0].password)) {
+      console.log("correct password");
+      req.session.authenticated = true;
+      req.session.username = result[0].username;
+      req.session.cookie.maxAge = expireTime;
+  
+      res.redirect("/loggedin");
+      return;
+    }
+    else {
+      console.log("incorrect password");
+      req.session.loginError = "Incorrect password.";
+      res.redirect("/login");
+      return;
+    }
+  });
+  
 
 app.get("/loggedin", (req, res) => {
   if (!req.session.authenticated) {
