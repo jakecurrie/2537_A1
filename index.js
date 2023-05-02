@@ -166,6 +166,12 @@ app.post('/loggingin', async (req, res) => {
       return;
     }
   });
+ 
+  
+app.get('/cat-image/:number', (req, res) => {
+    const number = req.params.number;
+    res.sendFile(__dirname + `/public/images/cat${number}.gif`);
+  });
   
 
 app.get("/loggedin", (req, res) => {
@@ -176,7 +182,7 @@ app.get("/loggedin", (req, res) => {
     console.log(randomImage); 
     var html = `
       <h1>Hello ${req.session.username}!</h1>
-      <img src="/images/cat${randomImage}.gif" style="width:250px;">
+      <img src="/cat-image/${randomImage}" style="width:250px;">
       <br>
       <br>
       <form action="/logout" method="POST">
@@ -184,7 +190,8 @@ app.get("/loggedin", (req, res) => {
       </form>
       `;
     res.send(html);
-  });
+});
+  
   
 
 
