@@ -168,26 +168,23 @@ app.post('/loggingin', async (req, res) => {
   
 
 app.get("/loggedin", (req, res) => {
-  if (!req.session.authenticated) {
-    res.redirect('/login');
-  }
-  app.use(express.static('public'));
-  const randomImage = Math.floor(Math.random() * 3) + 1;
-  console.log(randomImage); 
-  var html = `
-    <h1>Hello ${req.session.username}!</h1>
-
-    
-    <img src = "/images/${randomImage}.gif" style = 'width:250px;'>
-    <br>
-    <br>
-    <form action="/logout" method="POST">
-      <button type="submit">Sign Out</button>
-    </form>
-
-    `;
-  res.send(html);
-});
+    if (!req.session.authenticated) {
+      res.redirect('/login');
+    }
+    const randomImage = Math.floor(Math.random() * 3) + 1;
+    console.log(randomImage); 
+    var html = `
+      <h1>Hello ${req.session.username}!</h1>
+      <img src="/images/cat${randomImage}.gif" style="width:250px;">
+      <br>
+      <br>
+      <form action="/logout" method="POST">
+        <button type="submit">Sign Out</button>
+      </form>
+      `;
+    res.send(html);
+  });
+  
 
 
 app.post('/logout', (req, res) => {
