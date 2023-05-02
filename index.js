@@ -59,6 +59,13 @@ app.get('/', (req, res) => {
 
 });
 
+function ensureAuthenticated(req, res, next) {
+  if (req.session.authenticated) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+}
 
 app.get('/createUser', (req, res) => {
   var html = `
@@ -174,7 +181,7 @@ app.get('/cat-image/:number', (req, res) => {
   });
   
 
-app.get("/loggedin", (req, res) => {
+app.get("/loggedin", ensureAuthenticated, (req, res) => {
     if (!req.session.authenticated) {
       res.redirect('/login');
     }
