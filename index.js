@@ -83,9 +83,9 @@ app.get('/nosql-injection', async (req, res) => {
 
 app.get('/', (req, res) => {
   if (req.session.authenticated) {
-    res.render('loggedInIndex', {username: req.session.username, currentPage: 'Home'});
+    res.render('loggedInIndex', {username: req.session.username});
   } else {
-    res.render('index', {currentPage: 'Home'});
+    res.render('index');
   }
 });
 
@@ -226,12 +226,17 @@ app.post('/logout', (req, res) => {
 });
 
 
+
 app.use(express.static(__dirname + "/public"));
+
+
 
 app.get("*", (req, res) => {
   res.status(404);
-  res.render('404', {currentPage: '404'});
-});
+  res.render('404');
+})
+
+
 
 app.listen(port, () => {
   console.log("Node application listening on port " + port);
