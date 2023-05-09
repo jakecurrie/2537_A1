@@ -97,7 +97,7 @@ app.get('/createUser', (req, res) => {
 
 
 app.get('/login', (req, res) => {
-
+  res.sendFile(__dirname + '/login.html');
   req.session.loginError = true;
   res.render('login', {loginError: req.session.loginError});
 });
