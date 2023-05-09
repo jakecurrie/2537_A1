@@ -11,11 +11,15 @@
       <input name='password' type='password' class="form-control" id="password" placeholder='Enter password'>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <% if (loginError === false) { %>
+    <% if (loginError === "notFound") { %>
       <div class="alert alert-danger mt-3" role="alert">
-        Invalid email/password combination
+        Invalid email address
+      </div>
+    <% } else if (loginError === "incorrectPassword") { %>
+      <div class="alert alert-danger mt-3" role="alert">
+        Incorrect password
       </div>
     <% } %>
   </form>
 </div>
-<%- include("templates/footer") %>
+<%- include("templates/footer") %> 
