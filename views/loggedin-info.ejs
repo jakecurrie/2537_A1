@@ -1,4 +1,10 @@
 <%- include("templates/header") %> 
-    You are logged in! 
-    <div>here's some info!</div>
+<body>
+    <h1>Hello, <%= username %></h1>
+    <a href="/members">Go to Members Area</a>
+    <br>
+    <form action="/logout" method="post">
+      <button type="submit">Logout</button>
+    </form>
+</body>
 <%- include("templates/footer") %> 

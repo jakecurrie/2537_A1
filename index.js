@@ -19,7 +19,7 @@ let ejs = require('ejs');
 const { Admin } = require("mongodb");
 app.set('view engine', 'ejs');
 
-const expireTime = 1 * 60 * 60 * 1000;
+const expireTime = 60 * 60 * 1000;
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -82,7 +82,11 @@ app.get('/nosql-injection', async (req, res) => {
 
 
 app.get('/', (req, res) => {
-res.render('index');
+  if (req.session.authenticated) {
+    res.render('loggedInIndex', {username: req.session.username});
+  } else {
+    res.render('index');
+  }
 });
 
 
