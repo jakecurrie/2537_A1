@@ -143,13 +143,14 @@ app.post('/loggingin', async (req, res) => {
     return;
   }
 
+
   const result = await userCollection.find({ email: email }).project({ username: 1, password: 1, email:1, _id: 1, type:1 }).toArray();
 
   console.log(result);
   if (result.length != 1) {
-    req.session.loginError = "notFound";
+    req.session.loginError = true;
     console.log("user not found");
-    res.render('login', {loginError: req.session.loginError});
+    res.redirect("/login");
     return;
   }
   if (await bcrypt.compare(password, result[0].password)) {
@@ -166,7 +167,7 @@ app.post('/loggingin', async (req, res) => {
   }
   else {
     console.log("incorrect password");
-    req.session.loginError = "incorrectPassword";
+    req.session.loginError = false;
     res.render('login', {loginError: req.session.loginError});
     return;
   }
