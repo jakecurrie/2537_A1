@@ -178,7 +178,7 @@ app.get("/members", (req, res) => {
   if (!req.session.authenticated) {
     res.send('<script>alert("You are not logged in to access this page."); window.location.href = "login";</script>');
   }else{
-  res.render('members', {username: req.session.username});
+  res.render('members', {username: req.session.username, currentPage: 'members'});
   }
 });
 
